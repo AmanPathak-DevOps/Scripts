@@ -2,17 +2,16 @@
 
 echo " mongoDB Database Backing UP "
 file_name="amandb_$(date +"%d-%m-%Y-%T")"
-mkdir -p /home/amanpathak/mongoDBBackups/$file_name
-mongodump --db DevOps -o /home/amanpathak/mongoDBBackups/$file_name
-cd /home/amanpathak/mongoDBBackups
+mongodump --authenticationDatabase admin -u aman -paman@123 --db Aman --out /home/amanpathak/mongodb_backups/$file_name
+cd /home/amanpathak/mongodb_backups
 zip -r $file_name.zip $file_name
 if [ $? -eq 0 ]
 then
-	aws s3 cp //home/amanpathak/mongoDBBackups/$file_name.zip s3://devops-aman-s3-bucket/${file_name}.zip
+	aws s3 cp //home/amanpathak/mongodb_backups/$file_name.zip s3://devops-aman-s3-bucket/${file_name}.zip
 	if [ $? -eq 0 ]
 	then
-		find /home/amanpathak/mongoDBBackups/ -type f -name "*.zip" -mmin +1 -exec rm -rf {} \;
-		sudo find /home/amanpathak/mongoDBBackups/ -type d -name "*" -mmin +1 -exec rm -rf {} \; 
+		find /home/amanpathak/mongodb_backups/ -type f -name "*.zip" -mmin +1 -exec rm -rf {} \;
+		sudo find /home/amanpathak/mongodb_backups/ -type d -name "*" -mmin +1 -exec rm -rf {} \; 
 		echo "File Deleted"
 	fi
 fi
